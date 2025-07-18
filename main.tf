@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "custom_sg" {
-  name        = "custom_sg"
+  name        = "custom-port-sg"
   description = "Allow inbound traffic on custom port"
 
   ingress {
@@ -21,27 +21,13 @@ resource "aws_security_group" "custom_sg" {
   }
 }
 
-resource "aws_instance" "ubuntu_instance" {
-  ami           = data.aws_ami.ubuntu.id
+resource "aws_instance" "ubuntu_server" {
+  ami           = "ami-0c02fb55956c7d316"  # Ubuntu Server 20.04 LTS (for us-east-1)
   instance_type = "t2.micro"
+  key_name      = var.key_name
   security_groups = [aws_security_group.custom_sg.name]
 
   tags = {
     Name = "UbuntuInstance"
-  }
-}
-
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
   }
 }
