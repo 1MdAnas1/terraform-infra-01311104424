@@ -8,11 +8,11 @@ on:
 
 jobs:
   terraform-fmt:
-    name: Terraform Format
+    name: Check Terraform Formatting
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Terraform
@@ -20,5 +20,12 @@ jobs:
         with:
           terraform_version: 1.6.0
 
-      - name: Terraform Format
+      - name: Run terraform fmt check
+        id: fmt
         run: terraform fmt -check -recursive
+
+      - name: Fail if formatting is incorrect
+        if: failure()
+        run: |
+          echo "❌ Terraform formatting check failed. Run 'terraform fmt -recursive' locally to fix it."
+          exit 1
